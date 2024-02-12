@@ -229,7 +229,9 @@ class FileConstructor():
             instance_list: list = None,  # for Images
             frame_packet_map: dict = None,  # for Video
             parent_file_id: int = None,
-            ordinal: int = 0
+            ordinal: int = 0,
+            directory_id: int = None,
+            assume_new_instances_machine_made = True
     ):
         """
 
@@ -253,7 +255,6 @@ class FileConstructor():
 
 
         """
-
         packet = self.__build_packet_payload(
             url = url,
             media_type = media_type,
@@ -263,9 +264,10 @@ class FileConstructor():
             instance_list = instance_list,
             frame_packet_map = frame_packet_map,
             parent_file_id = parent_file_id,
-            ordinal = ordinal
+            ordinal = ordinal,
+            directory_id=directory_id
         )
-        self.from_packet(packet = packet)
+        self.from_packet(packet = packet, assume_new_instances_machine_made=assume_new_instances_machine_made)
 
         return True
 
@@ -299,7 +301,8 @@ class FileConstructor():
             packet,
             job = None,
             convert_names_to_label_files = True,
-            assume_new_instances_machine_made = True
+            assume_new_instances_machine_made = True,
+            directory_id = 1
     ):
         """
         Import single packet of data of the form:
@@ -386,6 +389,8 @@ class FileConstructor():
         if job:
             packet["job_id"] = job.id
             packet["mode"] = "attach_to_job"
+
+        packet["directory_id"] = directory_id
 
         endpoint = "/api/walrus/v1/project/" + \
                    self.client.project_string_id + "/input/packet"
